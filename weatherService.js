@@ -12,6 +12,19 @@ const TEST_SERVER_PRIVATE_KEY =
 '6dcc124be5f382be631d49ba12f61adbce33a5ac14f6ddee12de25272f943f8b'
 const TEST_SERVER_BASEURL = `http://localhost:${port}`
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', '*')
+  res.header('Access-Control-Allow-Methods', '*')
+  res.header('Access-Control-Expose-Headers', '*')
+  res.header('Access-Control-Allow-Private-Network', 'true')
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200)
+  } else {
+    next()
+  }
+})
+
 // Default route requests the description of the current weather
 app.get('/', async (req, res) => {
   try {
@@ -41,7 +54,7 @@ app.use(PacketPay({
   }
 }))
 
-app.get('/weatherStats', async (req, res) => {
+app.post('/weatherStats', async (req, res) => {
   console.log(`Received ${req.packetpay.satoshisPaid} satoshis!`)
   const response = await fetch(
     'https://openweathermap.org/data/2.5/weather?id=5746545&appid=439d4b804bc8187953eb36d2a8c26a02',
